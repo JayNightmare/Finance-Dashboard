@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+  <h1 class="mb-4">Dashboard</h1>
+  {% if currency_warning %}
+    <div class="alert alert-warning">{{ currency_warning }}</div>
+  {% endif %}
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card text-bg-success">
+        <div class="card-body">
+          <h5 class="card-title">Income (This Month)</h5>
+          <p class="card-text fs-3">{{ income_total|floatformat:2 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-bg-danger">
+        <div class="card-body">
+          <h5 class="card-title">Expenses (This Month)</h5>
+          <p class="card-text fs-3">{{ expense_total|floatformat:2 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-bg-primary">
+        <div class="card-body">
+          <h5 class="card-title">Net</h5>
+          <p class="card-text fs-3">{{ net_total|floatformat:2 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">Top Categories</div>
+        <div class="card-body">
+          {% if top_categories %}
+            <canvas id="categoryChart"></canvas>
+            <ul class="list-group list-group-flush mt-3">
+              {% for cat in top_categories %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  {{ cat.name }}
+                  <span class="badge bg-secondary">{{ cat.total|floatformat:2 }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">No categories yet this month.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">Recent Transactions</div>
+        <div class="card-body">
+          {% if recent_transactions %}
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for txn in recent_transactions %}
+                    <tr>
+                      <td>{{ txn.date }}</td>
+                      <td>{{ txn.get_type_display }}</td>
+                      <td>{{ txn.amount|floatformat:2 }} {{ txn.currency }}</td>
+                      <td>{{ txn.category }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-muted">No transactions yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {% if top_categories %}
+    <script>
+      const categoryChart = document.getElementById('categoryChart');
+      const categoryData = {
+        labels: [
+          {% for cat in top_categories %}'{{ cat.name }}',{% endfor %}
+        ],
+        datasets: [{
+          label: 'Total',
+          data: [
+            {% for cat in top_categories %}{{ cat.total }},{% endfor %}
+          ],
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'rgb(54, 162, 235)',
+          borderWidth: 1
+        }]
+      };
+      new Chart(categoryChart, {
+        type: 'bar',
+        data: categoryData,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    </script>
+  {% endif %}
+{% endblock %}

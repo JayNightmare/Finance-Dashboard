@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Transactions{% endblock %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Transactions</h1>
+    <a href="{% url 'core:transaction-create' %}" class="btn btn-primary">Add Transaction</a>
+  </div>
+
+  <form method="get" class="card card-body mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Start</label>
+        {{ filter_form.start }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End</label>
+        {{ filter_form.end }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Category</label>
+        {{ filter_form.category }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Tag</label>
+        {{ filter_form.tag }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Type</label>
+        {{ filter_form.type }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Min Amount</label>
+        {{ filter_form.min_amount }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Max Amount</label>
+        {{ filter_form.max_amount }}
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Search</label>
+        {{ filter_form.q }}
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-outline-primary">Filter</button>
+        <a href="{% url 'core:transactions' %}" class="btn btn-outline-secondary">Reset</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Currency</th>
+          <th>Category</th>
+          <th>Tags</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for txn in transactions %}
+          <tr>
+            <td>{{ txn.date }}</td>
+            <td>{{ txn.get_type_display }}</td>
+            <td>{{ txn.amount|floatformat:2 }}</td>
+            <td>{{ txn.currency }}</td>
+            <td>{{ txn.category }}</td>
+            <td>
+              {% for tag in txn.tags.all %}
+                <span class="badge bg-secondary">{{ tag.name }}</span>
+              {% empty %}
+                <span class="text-muted">—</span>
+              {% endfor %}
+            </td>
+            <td>{{ txn.notes|truncatechars:50 }}</td>
+            <td class="text-end">
+              <a href="{% url 'core:transaction-update' txn.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+              <a href="{% url 'core:transaction-delete' txn.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" class="text-center text-muted">No transactions found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <nav>
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock %}

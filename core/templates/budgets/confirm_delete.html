@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Delete Budget{% endblock %}
+{% block content %}
+  <h1>Delete Budget</h1>
+  <p>Deleting this budget will remove progress tracking for future sessions.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a href="{% url 'core:budgets' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}

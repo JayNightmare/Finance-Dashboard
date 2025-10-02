@@ -1,0 +1,110 @@
+{% extends "base.html" %} {% block title %}Preview Import{% endblock %} {% block
+content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <h1 class="mb-3">Preview &amp; Map Columns</h1>
+        <p class="text-muted">
+            Review the first few rows and map each column to a field. Only
+            mapped columns will be imported.
+        </p>
+        <form
+            method="post"
+            action="{{ action_url }}"
+            id="commit-form"
+            class="card mb-4"
+        >
+            <div class="card-body">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="commit" />
+                <input type="hidden" name="mapping" id="mapping-field" />
+                <div class="row g-3">
+                    {% for header in headers %}
+                    <div class="col-md-4">
+                        <label class="form-label">{{ header }}</label>
+                        <select
+                            class="form-select mapping-select"
+                            data-header="{{ header }}"
+                        >
+                            {% for choice in column_choices %}
+                            <option value="{{ choice }}">
+                                {{ choice|capfirst }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a
+                    href="{% url 'core:import' %}"
+                    class="btn btn-outline-secondary"
+                    >Start Over</a
+                >
+                <button type="submit" class="btn btn-success">
+                    Commit {{ total_rows }} Row{{ total_rows|pluralize }}
+                </button>
+            </div>
+        </form>
+
+        <div class="card">
+            <div class="card-header">
+                Preview (first {{ rows|length }} rows)
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped mb-0">
+                        <thead>
+                            <tr>
+                                {% for header in headers %}
+                                <th>{{ header }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                {% for cell in row %}
+                                <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td
+                                    colspan="{{ headers|length }}"
+                                    class="text-center text-muted"
+                                >
+                                    No rows detected.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    (function () {
+        const form = document.getElementById("commit-form");
+        const mappingField = document.getElementById("mapping-field");
+        const selects = document.querySelectorAll(".mapping-select");
+        const suggested = JSON.parse("{{ suggested_mapping_json|escapejs }}");
+        selects.forEach((select) => {
+            const header = select.dataset.header;
+            if (suggested[header]) {
+                select.value = suggested[header];
+            }
+        });
+        form.addEventListener("submit", function () {
+            const mapping = {};
+            selects.forEach((select) => {
+                mapping[select.dataset.header] = select.value;
+            });
+            mappingField.value = JSON.stringify(mapping);
+        });
+    })();
+</script>
+{% endblock %}

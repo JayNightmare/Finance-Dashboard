@@ -1,0 +1,189 @@
+{% extends "base.html" %} {% block title %}Category Report{% endblock %} {%
+block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h1 class="mb-0">Category Breakdown</h1>
+                <p class="text-muted mb-0">
+                    Compare income and expense categories over a chosen period.
+                </p>
+            </div>
+            <a
+                href="{% url 'core:reports-monthly' %}"
+                class="btn btn-outline-secondary"
+                >Monthly Trends</a
+            >
+        </div>
+        <form method="get" class="card card-body mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Start</label>
+                    {{ form.start }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">End</label>
+                    {{ form.end }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Category</label>
+                    {{ form.category }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tag</label>
+                    {{ form.tag }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Type</label>
+                    {{ form.type }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Min Amount</label>
+                    {{ form.min_amount }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Max Amount</label>
+                    {{ form.max_amount }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Search Notes</label>
+                    {{ form.q }}
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        Apply Filters
+                    </button>
+                    <a
+                        href="{% url 'core:reports-categories' %}"
+                        class="btn btn-outline-secondary"
+                        >Reset</a
+                    >
+                </div>
+            </div>
+        </form>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card text-bg-success">
+                    <div class="card-body">
+                        <h6 class="text-uppercase small mb-1">Total Income</h6>
+                        <p class="fs-3 mb-0">
+                            {{ income_total|floatformat:2 }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-bg-danger">
+                    <div class="card-body">
+                        <h6 class="text-uppercase small mb-1">Total Expense</h6>
+                        <p class="fs-3 mb-0">
+                            {{ expense_total|floatformat:2 }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-bg-primary">
+                    <div class="card-body">
+                        <h6 class="text-uppercase small mb-1">Net</h6>
+                        <p class="fs-3 mb-0">{{ net_total|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <canvas id="categoryChart" height="120"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in categories %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.kind|capfirst }}</td>
+                            <td
+                                class="text-end {% if row.kind == 'EXPENSE' %}text-danger{% else %}text-success{% endif %}"
+                            >
+                                {{ row.total|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                No categories matched your filters.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+    (function () {
+        const canvas = document.getElementById("categoryChart");
+        const payload = JSON.parse("{{ chart_data_json|escapejs }}");
+        if (!canvas || !payload.labels.length) {
+            return;
+        }
+        new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: payload.labels,
+                datasets: [
+                    {
+                        label: "Total",
+                        data: payload.totals,
+                        backgroundColor: "rgba(13, 110, 253, 0.6)",
+                        borderColor: "rgb(13, 110, 253)",
+                        borderWidth: 1,
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                return new Intl.NumberFormat(undefined, {
+                                    style: "currency",
+                                    currency: "GBP",
+                                }).format(context.parsed.y);
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: (value) =>
+                                new Intl.NumberFormat(undefined, {
+                                    style: "currency",
+                                    currency: "GBP",
+                                }).format(value),
+                        },
+                    },
+                },
+            },
+        });
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Delete Category{% endblock %}
+{% block content %}
+  <h1>Delete Category</h1>
+  <p>Deleting a category will remove it from future selections but will not delete existing transactions.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Yes, delete</button>
+    <a href="{% url 'core:categories' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+{% endblock %}

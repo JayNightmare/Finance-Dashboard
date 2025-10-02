@@ -1,0 +1,53 @@
+body.bg-surface {
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #f4f7ff 0%, #eef1f7 45%, #e1e5ee 100%);
+    color: #1f2933;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(120deg, #1d4ed8 0%, #2563eb 50%, #1e3a8a 100%) !important;
+}
+
+.card {
+    border-radius: 1rem;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"],
+.auth-card input[type="number"],
+.auth-card input[type="tel"],
+.auth-card input[type="url"],
+.auth-card input[type="date"],
+.auth-card input[type="datetime-local"],
+.auth-card select,
+.auth-card textarea {
+    display: block;
+    width: 100%;
+    padding: 0.95rem 1rem;
+    font-size: 1rem;
+    background-color: #fff;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    border-radius: 0.75rem;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-card input:focus,
+.auth-card select:focus,
+.auth-card textarea:focus {
+    border-color: #2563eb;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.18);
+}
+
+.link-offset-2 {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.link-offset-2:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}

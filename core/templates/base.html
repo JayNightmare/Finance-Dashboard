@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{% block title %}Finance Dashboard{% endblock %}</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+        {% block head_extra %}{% endblock %}
+    </head>
+    <body class="bg-surface">
+        <nav
+            class="navbar navbar-expand-lg navbar-dark bg-gradient-primary shadow-sm mb-4"
+        >
+            <div class="container">
+                <a
+                    class="navbar-brand fw-semibold"
+                    href="{% url 'core:dashboard' %}"
+                    >Finance</a
+                >
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    {% if request.user.is_authenticated %}
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{% url 'core:transactions' %}"
+                                >Transactions</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{% url 'core:categories' %}"
+                                >Categories</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'core:tags' %}"
+                                >Tags</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'core:budgets' %}"
+                                >Budgets</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'core:import' %}"
+                                >Import</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'core:export' %}"
+                                >Export</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{% url 'core:reports-monthly' %}"
+                                >Reports</a
+                            >
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <span class="navbar-text me-3"
+                                >{{ request.user.email }}</span
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{% url 'account_logout' %}"
+                                >Logout</a
+                            >
+                        </li>
+                    </ul>
+                    {% else %}
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'account_login' %}"
+                                >Sign in</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="btn btn-light btn-sm ms-lg-3"
+                                href="{% url 'account_signup' %}"
+                                >Sign up</a
+                            >
+                        </li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+
+        <main class="container py-4">
+            {% if messages %} {% for message in messages %}
+            <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                role="alert"
+            >
+                {{ message }}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+            </div>
+            {% endfor %} {% endif %} {% block content %}{% endblock %}
+        </main>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+            integrity="sha384-q/ZqcdrhPYTno5o60ZQimWnH9MNRosWCdjmRSAf8BaF75CzU6DGMnEXdLXdzN4xP"
+            crossorigin="anonymous"
+        ></script>
+        {% block extra_js %}{% endblock %}
+    </body>
+</html>
