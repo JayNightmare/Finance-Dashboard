@@ -14,6 +14,19 @@ Privacy-first personal finance tracker built with Django. This project follows t
 - REST API powered by Django REST Framework with JWT auth.
 - Reporting endpoints and pages for monthly and category breakdowns.
 
+## Tech Stack
+
+| Area | Technologies |
+| --- | --- |
+| Language & Runtime | Python 3.12+, Django 5, Django REST Framework |
+| Authentication & Security | django-allauth, dj-rest-auth, django-axes, SimpleJWT |
+| Data & Storage | PostgreSQL 14+, `pg_trgm` extension, psycopg 3 |
+| Infrastructure | Docker (for local Postgres), .env configuration |
+| Static Assets & Delivery | WhiteNoise, Django staticfiles pipeline |
+| Frontend | Bootstrap 5, Chart.js, custom CSS |
+| Developer Experience | pytest & pytest-django, django-filter, python-dotenv, django-crispy-forms |
+
+
 ## Getting Started
 
 ### Prerequisites
