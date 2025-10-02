@@ -1,4 +1,7 @@
+<div align=center>
+
 # Finance Dashboard
+</div>
 
 Privacy-first personal finance tracker built with Django. This project follows the MoSCoW requirements outlined in the project brief.
 
